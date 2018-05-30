@@ -1,17 +1,15 @@
 fun is_older(date1 : int * int * int, date2 : int * int * int) =
-    if (#1 date1) < (#1 date2) 
-    then true
-    else if(#1 date1) > (#1 date2)
-    then false
-    else
-        if (#2 date1) < (#2 date2)
-        then true
-        else if(#2 date1) > (#2 date2)
-        then false
-        else
-            if(#3 date1) < (#3 date2)
-            then true
-            else false
+    let
+        val y1 = #1 date1
+        val m1 = #2 date1
+        val d1 = #3 date1
+        val y2 = #1 date2
+        val m2 = #2 date2
+        val d2 = #3 date2
+    in
+        y1 < y2 orelse (y1 = y2 and m1 < m2) 
+        orelse (y1 = y2 andalso m1 = m2 andalso d1 < d2)
+    end
 
 
 fun number_in_month(dates : (int * int * int) list, month : int) =
@@ -26,8 +24,6 @@ fun number_in_month(dates : (int * int * int) list, month : int) =
 fun number_in_months (dates: (int * int * int) list, months: int list) =
     if null months
     then 0
-    else if null(tl(months)) 
-    then number_in_month(dates, hd(months))
     else number_in_month(dates, hd(months)) + number_in_months(dates, tl(months))
 
 
@@ -42,8 +38,6 @@ fun dates_in_month(dates: (int * int * int) list, month: int) =
 fun dates_in_months(dates: (int * int * int) list, months: int list) =
     if null months
     then []
-    else if null(tl(months)) 
-    then dates_in_month(dates, hd(months))
     else dates_in_month(dates, hd(months)) @ dates_in_months(dates, tl(months))
 
 
@@ -76,7 +70,7 @@ fun date_to_string(date: (int * int * int)) =
 
 fun number_before_reaching_sum(sum: int, numbers: int list) =
     if hd(numbers) < sum
-    then 1 + number_before_reaching_sum(sum + ~(hd(numbers)), tl(numbers))
+    then 1 + number_before_reaching_sum(sum - (hd(numbers)), tl(numbers))
     else 0
 
 
