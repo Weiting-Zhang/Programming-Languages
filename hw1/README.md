@@ -1,8 +1,8 @@
+Here is some notes while review my homework and my classmates'.
+
 - [HomeWork Questions(2018.5)](https://d3c33hcgiwev3.cloudfront.net/_7a72e1fca5f6a0373860ae1c8eeddbd0_hw1.pdf?Expires=1527811200&Signature=Da3I1lyIvuDL3SxoARrt45RpDv3kpL2cDLfi91RlSOxDQ6KdlXO6E7IyO14BRP9Yfw51NCn2BJMwFKDyh2fOe9HhcJ17RF1bgEY7ReYw3hpXgkd8voMMlBmZlaTPAwJECoY3vXnDU9d4jjYefotUdDINBUaIBYSJzxfghkSX-18_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
 - [HomeWork Source Code](./hw1.sml)
 - [Test for this HomeWork](./hw1test.sml)
-
-Here is some notes while review my homework and my classmates'.
 
 ### Problem 1
 
@@ -94,7 +94,7 @@ fun dates_in_month (dates : (int * int * int) list, month : int) =
 
 ### Problem 5
 
-The same problem in problem 3:
+My version:
 
 ``` sml
 fun dates_in_months(dates: (int * int * int) list, months: int list) =
@@ -104,6 +104,8 @@ fun dates_in_months(dates: (int * int * int) list, months: int list) =
     then dates_in_month(dates, hd(months))
     else dates_in_month(dates, hd(months)) @ dates_in_months(dates, tl(months))
 ```
+
+where the last two conditions can merge to one.(see the sample solution)
 
 Sample solution:
 
@@ -147,7 +149,7 @@ fun number_before_reaching_sum(sum: int, numbers: int list) =
     else 0
 ```
 
-What you want to find is `the number before reaching sum`, the thoughts is similar to problem 6: if the first one of the list(head) is already `reaching`(larger than) the `sum`, then you can "find" the position is `0`; if after adding the second it reaches the sum, then the number is `1`. And you can think like this: it is because the second one of the given list is larger than the (`sum - hd numbers`)...and so on. Such the algorithm is: if current number is not reaching the sum, then the target position is `1 + the next number reaching sum - current number`.
+What you want to find is `the number before reaching sum`, the thoughts is similar to problem 6: if the first one of the list(head) is already `reaching`(larger than) the `sum`, then you can "find" the position is `0`; if after adding the second it reaches the sum, then the number is `1`. And you can think like this: it is because the second one of the given list is greater than the (`sum - hd numbers`)...and so on. Such the algorithm is: if current number is not reaching the sum, then the target position is `1 + the next number reaching sum - current number`.
 
 ### Problem 9
 
@@ -208,9 +210,23 @@ fun cumulative_sum(numbers: int list) =
         end
 ```
 
-TODO:
+An important thing is to use a helper function to enable recurisive call that caculate the sum list. The algorithm is almost like the `count_from1` function in class:
+
+``` sml
+fun countup_from1(x: int) =
+    let
+      fun count (from: int) = 
+        if from = x
+        then x::[]
+        else from ::count(from+1)
+    in
+      count 1
+    end
+```
 
 ### Problem 12*
+
+The most diffcult part of this problem is how to remove the duplicates in a list. Here only shows how to remove duplicates. The completed solution is in [homework](./hw1.sml).
 
 My initial version:
 
@@ -249,3 +265,49 @@ fun remove_duplicates(xs : int list) =
         end
 ```
 
+The sample solution's algorithm is more clear. If I have got the none-duplicates list of `tl list`, then I only need to confirm if current head is in memory of `tl list`. Then concat them or remove the head.
+
+### Problem 13
+
+My solution still too imperative:
+
+``` sml
+fun reasonable_date(date: int * int * int) =
+    if #1 date < 1
+    then false
+    else if (#2 date < 1) orelse (#2 date > 12)
+    then false
+    else if (#3 date < 1) orelse (#3 date > 31)
+    then false
+    else if (#3 date = 31)
+    then not (#2 date = 2 orelse (#2 date = 4) orelse (#2 date = 6) orelse (#2 date = 9) orelse (#2 date = 11))
+    else if (#3 date = 29) andalso (#2 date = 2)
+    then
+        if not(#1 date mod 4 = 0)
+        then false
+        else if #1 date mod 100 = 0
+        then #1 date mod 400 = 0
+        else true
+    else true
+```
+
+More functionsl solution like this:
+
+``` sml
+fun reasonable_date (date : int * int * int) =
+    let    
+        fun get_nth (lst : int list, n : int) =
+        if n=1
+        then hd lst
+        else get_nth(tl lst, n-1)
+        val year  = #1 date
+        val month = #2 date
+        val day   = #3 date
+        val leap  = year mod 400 = 0 orelse (year mod 4 = 0 andalso year mod 100 <> 0)
+        val feb_len = if leap then 29 else 28
+        val lengths = [31,feb_len,31,30,31,30,31,31,30,31,30,31]
+    in
+        year > 0 andalso month >= 1 andalso month <= 12
+        andalso day >= 1 andalso day <= get_nth(lengths,month)
+    end
+```

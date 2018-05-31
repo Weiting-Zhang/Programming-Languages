@@ -7,7 +7,7 @@ fun is_older(date1 : int * int * int, date2 : int * int * int) =
         val m2 = #2 date2
         val d2 = #3 date2
     in
-        y1 < y2 orelse (y1 = y2 and m1 < m2) 
+        y1 < y2 orelse (y1 = y2 andalso m1 < m2) 
         orelse (y1 = y2 andalso m1 = m2 andalso d1 < d2)
     end
 
@@ -144,19 +144,18 @@ fun dates_in_months_challenge(dates: (int * int * int) list, months: int list) =
     end
 
 fun reasonable_date(date: int * int * int) =
-    if #1 date < 1
-    then false
-    else if (#2 date < 1) orelse (#2 date > 12)
-    then false
-    else if (#3 date < 1) orelse (#3 date > 31)
-    then false
-    else if (#3 date = 31)
-    then not (#2 date = 2 orelse (#2 date = 4) orelse (#2 date = 6) orelse (#2 date = 9) orelse (#2 date = 11))
-    else if (#3 date = 29) andalso (#2 date = 2)
-    then
-        if not(#1 date mod 4 = 0)
-        then false
-        else if #1 date mod 100 = 0
-        then #1 date mod 400 = 0
-        else true
-    else true
+    let    
+        fun get_nth (lst : int list, n : int) =
+        if n=1
+        then hd lst
+        else get_nth(tl lst, n-1)
+        val year  = #1 date
+        val month = #2 date
+        val day   = #3 date
+        val leap  = year mod 400 = 0 orelse (year mod 4 = 0 andalso year mod 100 <> 0)
+        val feb_len = if leap then 29 else 28
+        val lengths = [31,feb_len,31,30,31,30,31,31,30,31,30,31]
+    in
+        year > 0 andalso month >= 1 andalso month <= 12
+        andalso day >= 1 andalso day <= get_nth(lengths,month)
+    end
