@@ -31,15 +31,15 @@ fun get_substitutions2(xs, s) =
         aux(xs, s, [])
     end
 
-fun similar_names(names_lists, given_name) =
-    let
-        val substitution_names = get_substitutions1(names_lists, #first given_name)
-        fun get_similar_names(substitution_names, {first = x1, middle = x2, last = x3}) =
-            case substitution_names of
-               [] => []
-             | x::xs' => {first = x, last = x3, middle = x2} :: get_similar_names(xs', {first = x1, middle = x2, last = x3})
+fun similar_names (substitutions,name) =
+    let 
+        val {first=x1, middle=x2, last=x3} = name
+	      fun get_names xs =
+	         case xs of
+		           [] => []
+	           | x::xs' => {first=x, middle=x2, last=x3}::(get_names(xs'))
     in
-        given_name :: get_similar_names(substitution_names, given_name)
+	      name::get_names(get_substitutions1(substitutions, x1))
     end
 
 
@@ -174,7 +174,7 @@ fun officiate_challenge (card_list, moves, goal) =
                     then c::current_helds
                     else play(cs, c::current_helds, tail)
     in
-        score (play(card_list,[], moves), goal)
+        score_challenge (play(card_list,[], moves), goal)
     end
 
 fun careful_player (card_list, goal) =
