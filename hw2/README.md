@@ -160,10 +160,94 @@ fun all_same_color cs =
 			    andalso all_same_color(neck::tail)
 ```
 
+### Problem 2e
 
-careful_player: Your function returns an incorrect result when given a hand of [(Spades,Num 7),(Hearts,King),(Clubs,Ace),(Diamonds,Num 2)] and a goal of 18 [incorrect answer]
+Another tail recursion example.
 
-careful_player: Your function returns an incorrect result when given a hand of [(Diamonds,Num 2),(Clubs,Ace)] and a goal of 11 [incorrect answer]
-Used '#' 1 times.
+``` sml
+fun sum_cards cards =
+    let
+        fun aux(cards, acc) =
+            case cards of
+               [] => acc
+             | c::cs => aux(cs, card_value c + acc)
+    in
+        aux(cards, 0)
+    end
+```
 
-Because the auto-grader gave a score above 80, here is the link to a message from a very cute dog: https://drive.google.com/file/d/0B5sUgbs6aDNpN2ppTUpyVDlQX0U/view?pref=2&pli=1
+### Problem 2f
+
+My version:
+
+``` sml
+fun score (held_cards, goal) =
+    let
+        val sum = sum_cards held_cards
+        fun pre_score(sum, goal) =
+            if sum > goal
+            then 3 * (sum - goal)
+            else goal - sum
+    in
+        if all_same_color held_cards
+        then pre_score(sum, goal) div 2
+        else pre_score(sum, goal)
+    end
+```
+
+More clearly and functional(Note `if` expression itself is an expression in SML):
+
+``` sml
+fun score (cs,goal) = 
+    let 
+        val sum = sum_cards cs
+    in
+        (if sum >= goal then 3 * (sum - goal) else goal - sum)
+	      div (if all_same_color cs then 2 else 1)
+    end
+```
+
+### Problem 2g
+
+My solution:
+
+``` sml
+fun officiate (card_list, moves, goal) =
+    let
+        fun play(card_list, current_helds, remain_moves) =
+            case remain_moves of
+               [] => current_helds
+             | head::tail => case head of
+                Discard c => play(card_list, remove_card(current_helds, c, IllegalMove), tail)
+              | Draw => case card_list of
+                 [] => current_helds
+               | c::cs => 
+                    if sum_cards (c::current_helds) > goal
+                    then c::current_helds
+                    else play(cs, c::current_helds, tail)
+    in
+        score (play(card_list,[], moves), goal)
+    end
+```
+
+More clearly case expression in sample solution:
+
+``` sml
+fun officiate (cards,plays,goal) =
+    let 
+        fun loop (current_cards,cards_left,plays_left) =
+            case plays_left of
+                [] => score(current_cards,goal)
+              | (Discard c)::tail => 
+                loop (remove_card(current_cards,c,IllegalMove),cards_left,tail)
+              | Draw::tail =>
+                (* note: must score immediately if go over goal! *)
+                case cards_left of
+                    [] => score(current_cards,goal)
+                  | c::rest => if sum_cards (c::current_cards) > goal
+                               then score(c::current_cards,goal)
+                               else loop (c::current_cards,rest,tail)
+    in 
+        loop ([],cards,plays)
+    end
+```

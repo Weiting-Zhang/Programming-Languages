@@ -181,11 +181,11 @@ fun careful_player (card_list, goal) =
     let
         fun careful_moves(card_list, helds, moves) =
             let 
-                fun remove_reach_zero cards =
+                fun remove_reach_zero (cards, goal) =
                     case cards of
                         [] => NONE
                       | c::cs => if sum_cards(remove_card (cards, c, IllegalMove)) = goal then SOME c
-                                 else remove_reach_zero cs
+                                 else remove_reach_zero (cs, goal - card_value c)
             in
                 case card_list of
                     [] => moves
@@ -194,7 +194,7 @@ fun careful_player (card_list, goal) =
                         then careful_moves (cs, c::helds, moves @ [Draw])
                         else if goal = sum_cards helds
                         then moves
-                        else case remove_reach_zero (c::helds) of
+                        else case remove_reach_zero (c::helds, goal) of
                             NONE => if sum_cards (c::helds) > goal then moves
                                     else careful_moves(cs, c::helds, moves @ [Draw])
                           | SOME cd => moves @ [Discard cd, Draw]
