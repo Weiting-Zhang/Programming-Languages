@@ -251,3 +251,113 @@ fun officiate (cards,plays,goal) =
         loop ([],cards,plays)
     end
 ```
+
+### Problem 3a*
+
+The basic idea of my `score_challenge` function is when we find the `sum` greater than the `goal`, we would find out the better socre by revalue the `Ace` cards. If we decide to revalue an `Ace` to `1`(before it is `11`), then the total `sum` decline `10`, and so on.
+
+``` sml
+fun score_challenge (held_cards, goal) =
+    let
+        val sum = sum_cards held_cards
+        fun better_score(held_cards, sum) =
+            case held_cards of
+               [] => 3 * (sum - goal)
+             | (the_suit, the_rank)::cs => 
+                case the_rank of
+                   Ace => 
+                    if sum - 10 > goal
+                    then better_score(cs, sum - 10)
+                    else Int.min(goal - (sum - 10), 3 * (sum - goal))
+                 | _ => better_score(cs, sum)
+        fun pre_score(sum, goal) =
+            if sum > goal
+            then better_score(held_cards, sum)
+            else goal - sum
+    in
+        if all_same_color held_cards
+        then pre_score(sum, goal) div 2
+        else pre_score(sum, goal)
+    end
+```
+
+The `officiate_challenge` function even simpler. **Note the game-ends-if-sum-exceeds-goal rule should apply only if there is no sum that is less than or equal to the goal.** (That is, only when we find there is no `Ace` can we use to decline the sum)
+
+Here I re-define the `card_value` caculation function and `sum_cards` function in `officiate_challenge` function.
+
+``` sml
+fun card_value_min (the_suit, the_rank)=
+    case the_rank of
+       Ace => 1
+     | Num n => n
+     | _ => 10
+
+fun sum_cards_min cards =
+    let  
+        fun aux(cards, acc) =
+            case cards of
+               [] => acc
+             | c::cs => aux(cs, card_value_min c + acc)
+    in
+        aux(cards, 0)
+    end
+
+fun officiate_challenge (card_list, moves, goal) =
+    let
+        fun play(card_list, current_helds, remain_moves) =
+            case remain_moves of
+               [] => current_helds
+             | head::tail => case head of
+                Discard c => play(card_list, remove_card(current_helds, c, IllegalMove), tail)
+              | Draw => case card_list of
+                 [] => current_helds
+               | c::cs => 
+                    if sum_cards_min (c::current_helds) > goal
+                    then c::current_helds
+                    else play(cs, c::current_helds, tail)
+    in
+        score_challenge (play(card_list,[], moves), goal)
+    end
+```
+
+### Problem 3b*
+
+The confusion in my mind before is what we should do if my held-card value is 10 points or less behind the goal? Actually, there is not a rule and it depends on ourselves. Here is the guide on Coursera:
+
+1. If held-card value is more than 10 points behind the goal, you must draw. (It is guaranteed to be safe, make sure you understand why.)
+2. **If your held-card value is 10 points or less behind the goal**, then you have a choice on your algorithm as to whether you should draw or not. **But you must ensure that you do not exceed the goal**. So you can either say "No I won't draw" or you can say "let me sneak a peak into the next card, and if it is safe to draw it then I will (which is sort of cheating, but valid from the assignment's point of view)" or something in-between. These are all valid approaches. But you must make sure that the held-card value never exceeds the goal. And you also must make sure to follow 4 below.
+3. If your score is 0, you must not make any more moves.
+4. If your score is not 0, but you can reach a zero by discarding a card and then drawing a card, this must be done. In order to achieve this, your algorithm will need to look ahead and see what the next card is.
+5. Your code may choose to discard cards if it wants to, or do any other things it wants almost, as long as it satisfies conditions 1-4 above. So say your held-card value is 6 points behind the goal and the next card would be a 2. Then you have some leeway in what to do. You can choose to discard a card, you can choose to just stop, you can choose draw pretending you have looked ahead at that 2. (If the next card was a 5-6 though, note case 4 above.)
+
+code:
+
+``` sml
+fun careful_player (card_list, goal) =
+    let
+        fun careful_moves(card_list, helds, moves) =
+            let 
+                fun remove_reach_zero (cards, goal) =
+                    case cards of
+                        [] => NONE
+                      | c::cs => if sum_cards(remove_card (cards, c, IllegalMove)) = goal then SOME c
+                                 else remove_reach_zero (cs, goal - card_value c)
+            in
+                case card_list of
+                    [] => moves
+                  | c::cs =>
+                        if goal - sum_cards helds > 10
+                        then careful_moves (cs, c::helds, moves @ [Draw])
+                        else if goal = sum_cards helds
+                        then moves
+                        else case remove_reach_zero (c::helds, goal) of
+                            NONE => if sum_cards (c::helds) > goal then moves
+                                    else careful_moves(cs, c::helds, moves @ [Draw])
+                          | SOME cd => moves @ [Discard cd, Draw]
+            end
+    in
+        careful_moves(card_list, [], [])
+    end
+```
+
+The critical part is the use of `remove_reach_zero` helper function. It checks if it is possible to reach a score of `0` by discarding a card followed by drawing a card and return the card should discard.
