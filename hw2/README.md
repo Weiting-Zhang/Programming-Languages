@@ -1,4 +1,4 @@
-- [HomeWork Questions(2018.6)](https://d3c33hcgiwev3.cloudfront.net/_bb712e620e1c46bbc8ce7ebb7a7cac05_hw2.pdf?Expires=1528070400&Signature=ERvcZGNdOzhTAd5pOM2Ypg260aMjPAHGhTSfvtSIseu4TD8-z8QcTxwfsHedkOMBY0CganNccfSw8G5beI5y-X334jA4owJwHYLSOyz9cg-T7x0X2TDPqTLQ3YWLJ9Atbxq0BELyoO-xCViDc~m7e48jvTSwYQKzEfbIy8G0r34_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
+- [HomeWork Questions(2018.6)](../homework-questions/hw2.pdf)
 - [HomeWork Source Code](./hw2.sml)
 - [Test for this HomeWork](./hw2test.sml)
 

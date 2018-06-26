@@ -1,6 +1,6 @@
 Here is some notes while review my homework and my classmates'.
 
-- [HomeWork Questions(2018.5)](https://d3c33hcgiwev3.cloudfront.net/_7a72e1fca5f6a0373860ae1c8eeddbd0_hw1.pdf?Expires=1527811200&Signature=Da3I1lyIvuDL3SxoARrt45RpDv3kpL2cDLfi91RlSOxDQ6KdlXO6E7IyO14BRP9Yfw51NCn2BJMwFKDyh2fOe9HhcJ17RF1bgEY7ReYw3hpXgkd8voMMlBmZlaTPAwJECoY3vXnDU9d4jjYefotUdDINBUaIBYSJzxfghkSX-18_&Key-Pair-Id=APKAJLTNE6QMUY6HBC5A)
+- [HomeWork Questions(2018.5)](../homework-questions/hw1.pdf)
 - [HomeWork Source Code](./hw1.sml)
 - [Test for this HomeWork](./hw1test.sml)
 
