@@ -37,7 +37,7 @@ fun all_answers f l =
 	let 
 		fun helper acc l = 
 			case l of
-			   [] => SOME []
+			   [] => SOME acc
 			 | x::xs => case f x of
 				NONE => NONE
 			  | SOME ans => helper (acc@ans) xs 
@@ -109,3 +109,8 @@ fun first_match v ps =
 	SOME (first_answer (fn p => match (v, p)) ps)
 	handle NoAnswer => NONE
 	
+datatype typ = Anything
+	     | UnitT
+	     | IntT
+	     | TupleT of typ list
+	     | Datatype of string
