@@ -21,9 +21,9 @@ Currently, this repo has 3 major parts you may be interested in and I will give 
 - Part A: ML and Functional Pragramming
 
   - [x] [Week 2 - Homework 1 - ML Functions, Tuples, Lists, and More](./hw1/): 104/100
-  - [x] [Week 3 -  Homework 2 - Datatypes, Pattern Matching, Tail Recursion, and More](./hw2/): 100/100
-  - [ ] [Week 4 -  Homework 3 - First-Class Functions and Closures]()
-   - [ ] [Week 5 -  Part A - Exam]()
+  - [x] [Week 3 -  Homework 2 - Datatypes, Pattern Matching, Tail Recursion, and More](./hw2/): 104/100
+  - [x] [Week 4 -  Homework 3 - First-Class Functions and Closures](./hw3/): 100/100
+   - [x] Week 5 -  Part A - Exam
  
 - Part B: Racket and Dynamically Typed Language
 
